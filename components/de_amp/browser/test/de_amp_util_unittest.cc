@@ -167,6 +167,17 @@ TEST(DeAmpUtilUnitTest, SingleQuotes) {
   CheckFindCanonicalLinkResult("https://abc.com", body, true, true);
 }
 
+TEST(DeAmpUtilUnitTest, CanonicalLinkWithHtmlEntities) {
+  const std::string body =
+      "<DOCTYPE! html>"
+      "<html AMP xyzzy>\n"
+      "<head><link rel=\"canonical\" "
+      "href=\"https://abc.com/article?id=5&amp;page=2\">"
+      "</head><body></body></html>";
+  CheckFindCanonicalLinkResult("https://abc.com/article?id=5&page=2", body,
+                               true, true);
+}
+
 TEST(DeAmpUtilUnitTest, NoQuotes) {
   const std::string body =
       "<DOCTYPE! html>"

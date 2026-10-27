@@ -9,6 +9,8 @@
 
 #include "base/feature_list.h"
 #include "base/no_destructor.h"
+#include "base/strings/escape.h"
+#include "base/strings/utf_string_conversions.h"
 #include "brave/components/de_amp/common/features.h"
 #include "brave/components/de_amp/common/pref_names.h"
 #include "components/prefs/pref_service.h"
@@ -97,7 +99,10 @@ base::expected<std::string, std::string> FindCanonicalAmpUrl(
     // Didn't find canonical link, potentially try again
     return base::unexpected("Couldn't find canonical URL in link tag");
   }
-  return base::ok(std::move(canonical_url));
+  // The href is raw attribute text, so decode HTML entities (e.g. "&amp;" in
+  // query strings) before it is used as a URL.
+  return base::ok(base::UTF16ToUTF8(
+      base::UnescapeForHTML(base::UTF8ToUTF16(canonical_url))));
 }
 
 }  // namespace de_amp
